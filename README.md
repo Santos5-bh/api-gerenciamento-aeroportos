@@ -10,7 +10,7 @@ Desenvolver uma API REST completa para gerenciar o cadastro de aeroportos espalh
 
 Para atender aos requisitos do projeto, esta será a nossa stack de desenvolvimento:
 
-* **Linguagem:** Java 17
+* **Linguagem:** Java 21
 * **Framework:** Spring Boot 3 
 * **Banco de Dados:** MySQL
 * **Build & Dependências:** Apache Maven
