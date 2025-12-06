@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/aeroportos")
@@ -24,42 +23,32 @@ public class AeroportoController {
 
     @GetMapping("/{iata}")
     public ResponseEntity<Aeroporto> buscarPorIata(@PathVariable String iata) {
-        Optional<Aeroporto> aeroporto = aeroportoService.buscarPorIata(iata);
-
-        return aeroporto.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        
+        Aeroporto aeroporto = aeroportoService.buscarPorIata(iata);
+        return ResponseEntity.ok(aeroporto);
     }
 
     @PostMapping
     public ResponseEntity<Aeroporto> criarAeroporto(@RequestBody Aeroporto aeroporto) {
-        Aeroporto novoAeroporto = aeroportoService.salvar(aeroporto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoAeroporto);
+        Aeroporto novo = aeroportoService.salvar(aeroporto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
     }
 
     @PutMapping("/{iata}")
-    public ResponseEntity<Aeroporto> atualizarAeroporto(@PathVariable String iata,
-            @RequestBody Aeroporto aeroportoAtualizado) {
-        Optional<Aeroporto> aeroportoExistente = aeroportoService.buscarPorIata(iata);
-
-        if (aeroportoExistente.isPresent()) {
-            aeroportoAtualizado.setId(aeroportoExistente.get().getId());
-            aeroportoAtualizado.setCodigoIata(iata);
-            Aeroporto salvo = aeroportoService.salvar(aeroportoAtualizado);
-            return ResponseEntity.ok(salvo);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Aeroporto> atualizarAeroporto(@PathVariable String iata, @RequestBody Aeroporto aeroportoAtualizado) {
+        
+        Aeroporto aeroportoExistente = aeroportoService.buscarPorIata(iata);
+        
+        aeroportoAtualizado.setId(aeroportoExistente.getId());
+        aeroportoAtualizado.setCodigoIata(iata); 
+        
+        Aeroporto salvo = aeroportoService.salvar(aeroportoAtualizado);
+        return ResponseEntity.ok(salvo);
     }
 
     @DeleteMapping("/{iata}")
     public ResponseEntity<Void> deletarAeroporto(@PathVariable String iata) {
-        Optional<Aeroporto> aeroporto = aeroportoService.buscarPorIata(iata);
-
-        if (aeroporto.isPresent()) {
-            aeroportoService.deletar(iata);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        aeroportoService.deletar(iata);
+        return ResponseEntity.noContent().build();
     }
 }
