@@ -21,7 +21,7 @@ public class Aeroporto implements Serializable {
     @Column(name = "cidade")
     private String cidade;
 
-    @Column(name = "codigo_pais_iso", length = 2) 
+    @Column(name = "codigo_pais_iso", length = 100) 
     private String codigoPaisIso;
 
     @Column(name = "latitude")
