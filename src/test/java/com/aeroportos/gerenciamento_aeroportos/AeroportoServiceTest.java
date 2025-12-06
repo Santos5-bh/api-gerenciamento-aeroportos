@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.aeroportos.gerenciamento_aeroportos.exception.AeroportoNaoEncontradoException;
 
 import java.util.Optional;
 
@@ -22,36 +23,41 @@ public class AeroportoServiceTest {
     @Mock
     private AeroportoRepository aeroportoRepository;
 
+    
     @Test
-    public void deveRetornarAeroporto_QuandoBuscarPorIataExistente() {
+    public void testeConverterPesParaMetros() {
         
-        Aeroporto mockAeroporto = new Aeroporto();
-        mockAeroporto.setCodigoIata("GRU");
-        mockAeroporto.setNome("Guarulhos");
-
-        
-        Mockito.when(aeroportoRepository.findByCodigoIata("GRU")).thenReturn(Optional.of(mockAeroporto));
-
-        
-        Optional<Aeroporto> resultado = aeroportoService.buscarPorIata("GRU");
-
-        
-        Assertions.assertTrue(resultado.isPresent());
-        Assertions.assertEquals("Guarulhos", resultado.get().getNome());
+        double resultado = aeroportoService.converterPesParaMetros(1000.0);
+        Assertions.assertEquals(304.8, resultado, 0.01);
     }
 
     @Test
-    public void deveLancarErro_QuandoTentarSalvarIataDuplicado() {
+    public void testeObterIsoPais() {
         
-        Aeroporto novoAeroporto = new Aeroporto();
-        novoAeroporto.setCodigoIata("GRU"); 
+        String iso = aeroportoService.obterIsoPais("Brazil");
+        Assertions.assertEquals("BR", iso);
+    }
 
+    
+
+    @Test
+    public void deveLancarErro_QuandoBuscarIataInexistente() {
         
-        Mockito.when(aeroportoRepository.existsByCodigoIata("GRU")).thenReturn(true);
+        Mockito.when(aeroportoRepository.findByCodigoIata("ZZZ")).thenReturn(Optional.empty());
 
+        Assertions.assertThrows(AeroportoNaoEncontradoException.class, () -> {
+            aeroportoService.buscarPorIata("ZZZ");
+        });
+    }
+
+    @Test
+    public void deveLancarErro_QuandoSalvarIataInvalido() {
+        
+        Aeroporto aeroporto = new Aeroporto();
+        aeroporto.setCodigoIata("ABCD"); 
         
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            aeroportoService.salvar(novoAeroporto);
+            aeroportoService.salvar(aeroporto);
         });
     }
 }
